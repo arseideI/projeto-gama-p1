@@ -1,7 +1,7 @@
 # Projeto Gama (Parte 1)
 Projeto Gama Accenture
 
-<details open>
+<details>
 <summary>Desafio</summary>
 <br>
 Armazenamento de dados de COVID-19 de todos os países do mundo através da API: https://documenter.getpostman.com/view/10808728/SzS8rjbc.
@@ -19,13 +19,13 @@ Após armazenamento dos valores no BD, este dito script Python deverá retornar 
 A impressão das 4 informações citadas acima deverá acontecer em tela, através do prompt de comando de execução do programa.
 </details>
 
-<details open>
+<details>
   <summary> Utilizando a aplicação </summary>
   <br>
   lorem ipsum
 </details>
 
-<details open>
+<details>
   <summary> Detalhes </summary>
   <br>
   lorem ipsum
