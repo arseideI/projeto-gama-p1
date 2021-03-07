@@ -1,7 +1,9 @@
 # Projeto Gama (Parte 1)
 Projeto Gama Accenture
 
-
+<details open>
+<summary>Desafio</summary>
+<br>
 Armazenamento de dados de COVID-19 de todos os países do mundo através da API: https://documenter.getpostman.com/view/10808728/SzS8rjbc.
 1) Crie um Script SQL para criação de um DataBase com um Schema para armazenar os registros de países e os dados de COVID-19 por todo o mundo. Na tabela que será armazenada os dados de países, 2 campos são obrigatórios de serem consistidos:
 Nome do país
@@ -15,3 +17,16 @@ Após armazenamento dos valores no BD, este dito script Python deverá retornar 
 3) Total de mortes por COVID-19 dos 10 países do mundo com maiores números.
 4) Total de casos confirmados por COVID-19 dos 10 países do mundo com maiores números.
 A impressão das 4 informações citadas acima deverá acontecer em tela, através do prompt de comando de execução do programa.
+</details>
+
+<details open>
+  <summary> Utilizando a aplicação </summary>
+  <br>
+  lorem ipsum
+</details>
+
+<details open>
+  <summary> Detalhes </summary>
+  <br>
+  lorem ipsum
+</details>
