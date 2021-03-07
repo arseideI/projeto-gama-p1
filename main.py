@@ -16,3 +16,5 @@ for country in countries:
     slug = country["Slug"]
     iso = country["ISO2"]
     print("Country: " + nome + " Slug: " + slug + " ISO2: " + iso)
+
+print("Todos os países buscados com sucesso!")
