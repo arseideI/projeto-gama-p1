@@ -21,10 +21,10 @@ class ConexaoBD(object):
             try:
                 print(f"Conexão com o banco de dados {self.verbose} Azure iniciada...")
                 self.conn = pyodbc.connect(f"{self.driver};"
-                                      f"Server={self.Server};"
-                                      f"Database={self.BD};"
-                                      f"UID={self.Login};"
-                                      f"PWD={self.Senha}")
+                                           f"Server={self.Server};"
+                                           f"Database={self.BD};"
+                                           f"UID={self.Login};"
+                                           f"PWD={self.Senha}")
                 print("A conexão ocorreu com êxito!")
                 self.flag = 1
 
@@ -59,7 +59,7 @@ class ConexaoBD(object):
                 elif err.errno == 1045:
                     print("Não foi possível realizar a conexão com o banco de dados (Login ou senha invalidos). Por favor, reveja os respectivos campos.")
                 else:
-                    print(f"Não foi possível Realizar a conexão com o banco de dados: {err.args[1]}. Por favor, tente novamente. ")
+                    print(f"Não foi possível Realizar a conexão com o banco de dados: {err.msg}. Por favor, tente novamente. ")
                 
         else:
             print("SGBD não suportado. Por favor, selecione sqlserver ou mysql.")
