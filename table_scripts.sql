@@ -42,3 +42,21 @@ CO.NM_COUTNRY AS PAIS
 FROM CASE_COUNTRY CS
 INNER JOIN COUNTRY CO ON CS.ID_COUNTRY = CO.ID_COUNTRY
 ORDER BY DT_CASE ASC
+
+-- Cálculo da diferença de casos confirmados por dia
+select a.ch, b.ch, a.CONFIRMED , b.CONFIRMED, a.CONFIRMED - b.CONFIRMED as calculo, a.DT_CASE, b.DT_CASE
+from
+(SELECT row_number() over(order by dt_case asc) as ch, confirmed, dt_case FROM CASE_COUNTRY WHERE ID_COUNTRY = 2 ) a
+inner join
+(SELECT row_number() over(order by dt_case asc) + 1 as ch, confirmed, dt_case FROM CASE_COUNTRY WHERE ID_COUNTRY = 2 ) b
+on a.ch = b.ch
+
+
+-- Somatório da diferença total
+select a.ID_COUNTRY, sum(a.CONFIRMED - b.CONFIRMED) as calculo
+from
+(SELECT row_number() over(order by dt_case asc) as ch, confirmed, dt_case, ID_COUNTRY FROM CASE_COUNTRY WHERE ID_COUNTRY = 2 ) a
+inner join
+(SELECT row_number() over(order by dt_case asc) + 1 as ch, confirmed, dt_case, ID_COUNTRY FROM CASE_COUNTRY WHERE ID_COUNTRY = 2 ) b
+on a.ch = b.ch
+group by a.ID_COUNTRY
