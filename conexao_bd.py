@@ -1,4 +1,4 @@
-#Classe para realizar a conexão com o BD e inserção dos valores
+#Classe para realizar a conexão com o BD
 import pyodbc
 import mysql.connector
 
@@ -7,7 +7,7 @@ class ConexaoBD(object):
     
     flag = 0
 
-    def __init__(self,Server,BD,Login,Senha,verbose, driver = "Driver = {SQL Server}"):
+    def __init__(self,Server,BD,Login,Senha,verbose, driver = "Driver={SQL Server}"):
         self.Server = Server
         self.BD = BD
         self.Login = Login
@@ -19,7 +19,7 @@ class ConexaoBD(object):
 
         if self.verbose == "sqlserver":
             try:
-                print(f"Conexão com o banco de dados {self.verbose} Azure iniciada...")
+                print(f"Conexão com o banco de dados {self.verbose} iniciada...")
                 self.conn = pyodbc.connect(f"{self.driver};"
                                            f"Server={self.Server};"
                                            f"Database={self.BD};"
@@ -27,7 +27,7 @@ class ConexaoBD(object):
                                            f"PWD={self.Senha}")
                 print("A conexão ocorreu com êxito!")
                 self.flag = 1
-                return self.conn()
+                return self.conn
 
             except pyodbc.Error as err:
                 if err.args[0] == "IM002":
@@ -44,14 +44,14 @@ class ConexaoBD(object):
         
         elif self.verbose == "mysql":
             try:
-                print(f"Conexão com o banco de dados {self.verbose} Azure iniciada...")
+                print(f"Conexão com o banco de dados {self.verbose} iniciada...")
                 self.conn = mysql.connector.connect(host=self.Server,
                                                     user=self.Login,
                                                     password=self.Senha,
                                                     database=self.BD)
                 print("A conexão ocorreu com êxito!")
                 self.flag = 1
-                return self.conn()
+                return self.conn
 
             except mysql.connector.Error as err:
                 if err.sqlstate == "42000":
@@ -64,10 +64,10 @@ class ConexaoBD(object):
                     print(f"Não foi possível Realizar a conexão com o banco de dados: {err.msg}. Por favor, tente novamente. ")
                 
         else:
-            print("SGBD não suportado. Por favor, selecione sqlserver ou mysql.")
+            print("SGBD não suportado. Por favor, selecione as opções sqlserver ou mysql.")
 
     def close_azure(self):
-        if self.flag == 1:
+
             self.conn.close()
             print("Conexão com o servidor encerrada...")
         else:
