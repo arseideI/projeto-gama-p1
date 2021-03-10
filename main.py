@@ -1,55 +1,94 @@
-import pyodbc
 import requests
-
-# conn = pyodbc.connect('Driver={SQL Server};'
-#                       'Server=arseideltest.database.windows.net;'
-#                       'Database=AT1_SQL_ARS;'
-#                       'UID=arseidel;'
-#                       'PWD=Seidelsenha123;')
-
-# cursor = conn.cursor()
-
-# countries = requests.get("https://api.covid19api.com/countries").json()
-#
-# for country in countries:
-#     nome = country["Country"]
-#     slug = country["Slug"]
-#     iso = country["ISO2"]
-#     print("Country: " + nome + " Slug: " + slug + " ISO2: " + iso)
-#
-# print("Todos os países buscados com sucesso!")
-
-# from conexao_bd import ConexaoBD
-import datetime
+from conexao_db import ConexaoBD
+from datetime import datetime
 import pyodbc
 import pandas as pd
 pd.set_option('display.max_columns', 6)
 
 """
+localhost
 login = SA
 password = sqlGama123
 """
 
 def option_from_user_page():
-    print('\n(1) ANTERIOR \t (2) PRÓXIMA \t\t\t (0) VOLTAR')
+    print('\n(1) ANTERIOR \t (2) PRÓXIMA \t (3) PESQUISAR POR DATA \t (0) VOLTAR')
 
     option = -1
-    while option < 0 or option > 2:
+    while option < 0 or option > 3:
         try:
             option = int(input("\nOPÇÃO: "))
 
         except ValueError:
-            print("Entrada inválida!")
+            print("ENTRADA INVÁLIDA".center(80))
             continue
 
-        if option < 0 or option > 2:
-            print("Opção inválida. Digite uma opção válida de acordo com o menu acima!")
+        if option < 0 or option > 3:
+            print("OPÇÃO INVÁLIDA".center(80))
 
     return option
 
+def show_cases(csr, msg, cases, page, diff):
+    print(msg)
+    conf_cases = get_cases(csr, cases, page=page, diff=diff)
+    print(conf_cases)
+
+def submenu_page(csr, msg, cases, diff):
+    option_1 = 4
+    page = 0
+
+    show_cases(csr, msg, cases, page, diff)
+
+    csr.execute("SELECT MAX(DT_CASE), MIN(DT_CASE) FROM CASE_COUNTRY")
+    last_day, first_day = csr.fetchall()[0]
+    total_days = (last_day - first_day).days
+
+    while option_1 >= 0 and option_1 <= 4:
+
+        if option_1 == 0:
+            break
+
+        if option_1 == 1:  # ANTERIOR
+            if page == 0:
+                print("\n" + "PRIMEIRA PÁGINA ATINGIDA!".center(80) + "\n")
+                show_cases(csr, msg, cases, page, diff)
+                option_1 = 4
+                continue
+            page += -1
+
+            show_cases(csr, msg, cases, page, diff)
+            option_1 = 4
+
+        if option_1 == 2:  # PRÓXIMO
+            if page >= total_days:
+                print("\n" + "ÚLTIMA PÁGINA ATINGIDA!".center(80) + "\n")
+                show_cases(csr, msg, cases, page, diff)
+                option_1 = 4
+                continue
+            page += 1
+
+            show_cases(csr, msg, cases, page, diff)
+            option_1 = 4
+
+        if option_1 == 3:
+            specific_date = datetime.strptime(input("DIGITE A DATA DESEJADA (A PARTIR DO DIA 2020-01-22): "), '%Y-%m-%d').date()
+            _page = (last_day - specific_date).days
+            if total_days < _page or _page < 0:
+                print("\n" + "DATA INVÁLIDA!".center(80) + "\n")
+                show_cases(csr, msg, cases, page, diff)
+                option_1 = 4
+                continue
+
+            page = _page
+            show_cases(csr, msg, cases, page, diff)
+            option_1 = 4
+
+        if option_1 == 4:
+            option_1 = option_from_user_page()
+
 
 def option_from_user():
-    print('\n-- Balanço de casos e mortes por COVID-19 dos 10 países com maiores números --\n'
+    print('\n' + '-- Balanço de casos e mortes por COVID-19 dos 10 países com maiores números --'.center(80) + '\n'
           '1 - Relatório de novos casos confirmados dos 10 países com maiores números\n'
           '2 - Relatório de novas mortes dos 10 países com maiores números\n'
           "3 - Relatório do total de mortes dos 10 países com maiores números\n"
@@ -59,36 +98,21 @@ def option_from_user():
     option = 0
     while option < 1 or option > 5:
         try:
-            option = int(input("Digite a opção desejada: "))
+            option = int(input("DIGITE A OPÇÃO DESEJADA: "))
         except ValueError:
-            print("Entrada inválida!")
+            print("ENTRADA INVÁLIDA!".center(80))
             option = 0
             continue
         if option < 1 or option > 5:
-            print("Opção inválida. Digite uma opção válida de acordo com o menu acima!")
+            print("OPÇÃO INVÁLIDA. DIGITE UMA OPÇÃO VÁLIDA DE ACORDO COM O MENU ACIMA!".center(80))
 
     return option
-
-def ConexaoBD(driver, server, bd, login, psswd):
-    conn = pyodbc.connect(f"{driver}"
-                          f"{server}"
-                          f"{bd}"
-                          f"UID={login};"
-                          f"PWD={psswd};")
-    print('-- Conexao estabelecida com banco de dados --')
-    return conn
-
-
-def commit_close(conn):
-    conn.commit()
-    conn.close()
 
 
 def get_cases_by_day(days, cases, csr):
     daily_list = []
 
     for day in days:
-        # print('TESTE: ', day)
         csr.execute(f"""
                     SELECT COUNTRY.NM_COUNTRY, {cases}, CC.DT_CASE
                     FROM COUNTRY INNER JOIN CASE_COUNTRY CC
@@ -110,18 +134,11 @@ def get_cases_by_day(days, cases, csr):
 
     return daily_list
 
-def get_cases(cases, k_top_countries=10, n_elements=3, page=0, diff=False ):
-    # n_elements = 5
-    # page = 0
-    # k_top_countries = 10
-    # diff = True
-    # cases = 'CC.CONFIRMED'
-    corr = 0
-    if page != 0:
-        corr = page
-
+def get_cases(csr, cases, k_top_countries=10, n_elements=3, page=0, diff=False):
     if diff:
         n_elements += 1
+
+    page -= n_elements
 
     csr.execute(f"""
                     SELECT COUNTRY.NM_COUNTRY, {cases}, CC.DT_CASE
@@ -131,7 +148,7 @@ def get_cases(cases, k_top_countries=10, n_elements=3, page=0, diff=False ):
                         (SELECT DISTINCT DT_CASE
                         FROM CASE_COUNTRY
                         ORDER BY DT_CASE DESC
-                        OFFSET {page * n_elements - corr} ROWS
+                        OFFSET {page + n_elements} ROWS
                         FETCH NEXT {n_elements} ROWS ONLY)
                     ORDER BY CC.DT_CASE DESC, {cases} DESC
                     """)
@@ -140,41 +157,47 @@ def get_cases(cases, k_top_countries=10, n_elements=3, page=0, diff=False ):
     covid_cases = df.pivot_table(values=1, index=[0], columns=[2])
     covid_cases = covid_cases[covid_cases.columns[::-1]]
     covid_cases = covid_cases.sort_values(by=[covid_cases.columns[0]], ascending=False)
-    covid_cases.index.name = 'COUNTRIES'
-    covid_cases.columns.name = 'DATE'
+    covid_cases.index.name = 'PAÍSES'
+    covid_cases.columns.name = 'DATA'
 
     if diff:
         covid_cases = (covid_cases.T - covid_cases.T.shift(-1)).T.sort_values(by=[covid_cases.columns[0]],
                                                                               ascending=False)
         n_elements -= 1
 
-    return covid_cases.iloc[:k_top_countries, :n_elements].applymap(lambda x: int(x))
+    return covid_cases.iloc[:k_top_countries, :n_elements].applymap(lambda x: int(x) if pd.isna(x) == False else 'SEM REGISTRO')
+
+
+#'Server=casadocodigo-sql-srv-isr.database.windows.net;'
+#'Database=BD_COVID_GAMMA;'
+#'UID=Administrador;'
+#'PWD=Alura!123;'
 
 
 if __name__ == '__main__':
 
     # driver = "{SQL Server}"
-    driver = "Driver={ODBC Driver 17 for SQL Server};"
-    server = "Server=localhost;"
-    bd = "Database=BD_COVID_GAMMA;"
+    # server = 'casadocodigo-sql-srv-isr.database.windows.net'
 
-    print('---- Login no banco de dados ----')
-    login = input("Insira o login para o banco de dados: \n")
-    psswd = input("Insira a senha para o banco de dados: \n")
+    driver = "Driver={ODBC Driver 17 for SQL Server}"
+    server = "localhost"
+    bd = "BD_COVID_GAMMA"
+
+    print('---- Login no banco de dados ----'.center(80))
+    login = input("LOGIN: \n")
+    psswd = input("SENHA: \n")
 
     connection = -1
-    # while connection == -1:
-    #     try:
-    #         conn = ConexaoBD(driver, server, bd, login, psswd)
-    #         connection = 1
-    #     except pyodbc.InterfaceError:
-    #         print("Login ou senha incorretos, tente novamente.")
-    #         break
 
-    conn = ConexaoBD(driver, server, bd, login, psswd)
+    conn = ConexaoBD(server,
+                     bd,
+                     login,
+                     psswd,
+                     'sqlserver',
+                     driver=driver).conexao_azure()
+
     csr = conn.cursor()
 
-    # print('Login precisa ser feito antes de acessar o banco de dados!\n')
     option = 0
     while option >= 0 and option <= 5:
 
@@ -182,181 +205,46 @@ if __name__ == '__main__':
             option = option_from_user()
 
         if option == 1:  # Relatório de casos confirmados dos 10 países com maiores números
-            print('-- Relatório de novos casos confirmados dos 10 países com maiores números --')
-            conf_cases = get_cases("CC.CONFIRMED", diff=True)
-            print(conf_cases)
-            option_1 = 3
-            page = 0
-            while option_1 >= 0 and option_1 <= 3:
-
-                if option_1 == 0:
-                    break
-
-                if option_1 == 1: # ANTERIOR
-                    page += -1
-                    if page < 0:
-                        print("Última página atingida! ")
-                        option_1 = 3
-
-                    print('-- Relatório de novos casos confirmados dos 10 países com maiores números --')
-                    conf_cases = get_cases("CC.CONFIRMED", page=page, diff=True)
-                    print(conf_cases)
-                    option_1 = 3
-
-                if option_1 == 2: # PRÓXIMO
-                    page += 1
-
-                    print('-- Relatório de novos casos confirmados dos 10 países com maiores números --')
-                    conf_cases = get_cases("CC.CONFIRMED", page=page, diff=True)
-                    print(conf_cases)
-                    option_1 = 3
-
-                if option_1 == 3:
-                    option_1 = option_from_user_page()
-
+            submenu_page(
+                csr,
+                '-- Relatório de novos casos confirmados dos 10 países com maiores números --',
+                'CC.CONFIRMED',
+                True
+                )
             option = 0
             continue
 
         if option == 2:  # Relatório de mortes dos 10 países com maiores números
-            print('-- Relatório de novas mortes dos 10 países com maiores números --')
-            conf_deaths = get_cases("CC.DEATHS", diff=True)
-            print(conf_deaths)
-            option_2 = 3
-            page = 0
-            while option_2 >= 0 and option_2 <= 3:
-
-                if option_2 == 0:
-                    break
-
-                if option_2 == 1:  # ANTERIOR
-                    page += -1
-                    if page < 0:
-                        print("Última página atingida! ")
-                        option_2 = 3
-
-                    print('-- Relatório de novas mortes dos 10 países com maiores números --')
-                    conf_deaths = get_cases("CC.DEATHS", page=page, diff=True)
-                    print(conf_deaths)
-                    option_2 = 3
-
-                if option_2 == 2:  # PRÓXIMO
-                    page += 1
-
-                    print('-- Relatório de novas mortes dos 10 países com maiores números --')
-                    conf_deaths = get_cases("CC.DEATHS", page=page, diff=True)
-                    print(conf_deaths)
-                    option_2 = 3
-
-                if option_2 == 3:
-                    option_2 = option_from_user_page()
-
+            submenu_page(
+                csr,
+                '-- Relatório de novas mortes dos 10 países com maiores números --',
+                'CC.DEATHS',
+                True
+            )
             option = 0
             continue
 
         if option == 3: # Total de mortes por COVID-19 dos 10 países do mundo com maiores números
-            print('-- Relatório do total de mortes dos 10 países com maiores números --')
-            total_deaths = get_cases("CC.DEATHS")
-            print(total_deaths)
-
-            option_3 = 3
-            page = 0
-            while option_3 >= 0 and option_3 <= 3:
-
-                if option_3 == 0:
-                    break
-
-                if option_3 == 1:  # ANTERIOR
-                    page += -1
-                    if page < 0:
-                        print("Última página atingida! ")
-                        option_3 = 3
-
-                    print('-- Relatório do total de mortes dos 10 países com maiores números --')
-                    total_deaths = get_cases("CC.DEATHS", page=page)
-                    print(total_deaths)
-                    option_3 = 3
-
-                if option_3 == 2:  # PRÓXIMO
-                    page += 1
-
-                    print('-- Relatório do total de mortes dos 10 países com maiores números --')
-                    total_deaths = get_cases("CC.DEATHS", page=page)
-                    print(total_deaths)
-                    option_3 = 3
-
-                if option_3 == 3:
-                    option_3 = option_from_user_page()
-
+            submenu_page(
+                csr,
+                '-- Relatório do total de mortes dos 10 países com maiores números --',
+                'CC.DEATHS',
+                False
+            )
             option = 0
             continue
 
         if option == 4: # Total de casos confirmados por COVID-19 dos 10 países do mundo com maiores números
-            print('-- Relatório do total de casos confirmados dos 10 países com maiores números --')
-            total_cases = get_cases("CC.CONFIRMED")
-            print(total_cases)
-
-            option_4 = 3
-            page = 0
-            while option_4 >= 0 and option_4 <= 3:
-
-                if option_4 == 0:
-                    break
-
-                if option_4 == 1:  # ANTERIOR
-                    page += -1
-                    if page < 0:
-                        print("Última página atingida! ")
-                        option_4 = 3
-
-                    print('-- Relatório do total de casos confirmados dos 10 países com maiores números --')
-                    total_cases = get_cases("CC.CONFIRMED", page=page)
-                    print(total_cases)
-                    option_4 = 3
-
-                if option_4 == 2:  # PRÓXIMO
-                    page += 1
-
-                    print('-- Relatório do total de casos confirmados dos 10 países com maiores números --')
-                    total_cases = get_cases("CC.CONFIRMED", page=page)
-                    print(total_cases)
-                    option_4 = 3
-
-                if option_4 == 3:
-                    option_4 = option_from_user_page()
-
-
+            submenu_page(
+                csr,
+                '-- Relatório do total de casos confirmados dos 10 países com maiores números --',
+                'CC.CONFIRMED',
+                False
+            )
             option = 0
-            continue
+
 
         if option == 5:
-            csr.close_Azure()
-            print("Programa finalizado!")
+            conn.close_Azure()
+            print("PROGRAMA FINALIZADO!".center(80))
             break
-
-
-
-
-# Extra
-
-        # if option == 1:  # Relatório de casos confirmados dos 10 países com maiores números
-        #     today = datetime.date.today()
-        #     current_day = '\'' + str(today) + '\''
-        #     daily_list_cd = get_cases_by_day([current_day], "CC.CONFIRMED", csr)
-        #     count = 1
-        #     while len(daily_list_cd[0]) == 0:
-        #         current_day = '\'' + str(today - datetime.timedelta(count)) + '\''
-        #         daily_list_cd = get_cases_by_day([current_day], "CC.CONFIRMED", csr)
-        #         if len(daily_list_cd[0]) != 0:
-        #             print(f"Mostrando resultados do dia {current_day}. Resultados indisponíveis para o dia {str(today)}. ")
-        #             break
-        #         count += 1
-        #
-        #     day_before = '\'' + str(today - datetime.timedelta(count+1)) + '\''
-        #     daily_list_db = get_cases_by_day([day_before], "CC.CONFIRMED", csr)
-        #
-        #     # print(daily_list_cd[0][0])
-        #     # print(daily_list_db[0][0])
-        #     print("TOTAL PAISES", len(daily_list_db[0]))
-        #     for count_cd, count_db in zip(daily_list_cd[0], daily_list_db[0]):
-        #         print(daily_list_cd[0][0]['CC.CONFIRMED'])
-        #         daily_list_cd[0][0]['CC.CONFIRMED'] = count_cd['CC.CONFIRMED'] - count_db['CC.CONFIRMED']
