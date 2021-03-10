@@ -177,17 +177,14 @@ def get_cases(csr, cases, k_top_countries=10, n_elements=3, page=0, diff=False):
 if __name__ == '__main__':
 
     # driver = "{SQL Server}"
-    # server = 'casadocodigo-sql-srv-isr.database.windows.net'
-
+    # server = "localhost"
+    server = 'casadocodigo-sql-srv-isr.database.windows.net'
     driver = "Driver={ODBC Driver 17 for SQL Server}"
-    server = "localhost"
     bd = "BD_COVID_GAMMA"
 
     print('---- Login no banco de dados ----'.center(80))
-    login = input("LOGIN: \n")
-    psswd = input("SENHA: \n")
-
-    connection = -1
+    login = input("LOGIN: ")
+    psswd = input("SENHA: ")
 
     conn = ConexaoBD(server,
                      bd,
@@ -245,6 +242,6 @@ if __name__ == '__main__':
 
 
         if option == 5:
-            conn.close_Azure()
+            conn.close_azure()
             print("PROGRAMA FINALIZADO!".center(80))
             break
