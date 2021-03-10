@@ -1,14 +1,11 @@
 from conexao_db import ConexaoBD
 import requests
-from datetime import date
 
-'''
-Carga massiva das tabelas da API postman COVID19
-'''
+#from datetime import datetime
+#from datetime import date
+import datetime
 
-''' 
-    Realiza uma chamada da API countryes COVID19    
-'''
+
 def request_api(url_api):
     resposta = requests.get(url_api)
     if resposta.status_code == 200:
@@ -39,37 +36,34 @@ def load_country():
 
 
 def load_cases_covid():
-    # db = ConexaoBD('casadocodigo-sql-srv-isr.database.windows.net', 'BD_COVID_GAMMA', 'Administrador', 'Alura!123', 'sqlserver')
-    db = ConexaoBD('DESKTOP-DPP33GN', 'BD_COVID_GAMMA', 'sa', 'sa', 'sqlserver')
+    db = ConexaoBD('casadocodigo-sql-srv-isr.database.windows.net', 'BD_COVID_GAMMA', 'Administrador', 'Alura!123', 'sqlserver')
+    # db = ConexaoBD('DESKTOP-DPP33GN', 'BD_COVID_GAMMA', 'sa', 'sa', 'sqlserver')
     conn = db.conexao_azure()
-    conn2 = db.conexao_azure()
-
     cursor = conn.cursor()
 
+    conn2 = db.conexao_azure()
+    cursor2 = conn2.cursor()
+
     # BUSCAR UMA LISTA DE PAISES PARA CONSULTA
-    list_country = cursor.execute(f"SELECT NM_COUNTRY_SLUG, ID_COUNTRY FROM COUNTRY")
+    list_country = cursor.execute(f"SELECT NM_COUNTRY_SLUG, ID_COUNTRY FROM COUNTRY WHERE ID_COUNTRY > 127")
 
     for next_country in list_country:
         print(next_country[0])
         url_api = (f'https://api.covid19api.com/total/country/{next_country[0]}')
 
         response = request_api(url_api)
-        for n_load in response:
 
-            cursor2 = conn2.cursor()
+        for n_load in response:
             id_country = (next_country[1])
             confirmed = (n_load['Confirmed'])
             deaths = (n_load['Deaths'])
             recovered = (n_load['Recovered'])
             active = (n_load['Active'])
             dt_case = (n_load['Date'])
-
             cursor2.execute(f"INSERT INTO CASE_COUNTRY(ID_COUNTRY, CONFIRMED, DEATHS, RECOVERED, ACTIVE, DT_CASE) VALUES (?,?,?,?,?,?)", id_country, confirmed, deaths, recovered, active, dt_case)
             cursor2.commit()
 
-'''
-CARGA MASSIVA DOS CASOS DESDE O DIA PRIMEIRO DIA POR PAISES
-'''
+
 def load_cases_covid_from_date():
     # db = ConexaoBD('casadocodigo-sql-srv-isr.database.windows.net', 'BD_COVID_GAMMA', 'Administrador', 'Alura!123', 'sqlserver')
     db = ConexaoBD('DESKTOP-DPP33GN', 'BD_COVID_GAMMA', 'sa', 'sa', 'sqlserver')
@@ -77,8 +71,7 @@ def load_cases_covid_from_date():
     # BUSCAR UMA LISTA DE PAISES PARA CONSULTA
     conn = db.conexao_azure()
     cursor = conn.cursor()
-    list_country = cursor.execute(f"SELECT NM_COUNTRY_SLUG, ID_COUNTRY FROM COUNTRY where id_country > 98")
-    print(list_country)
+    list_country = cursor.execute(f"SELECT NM_COUNTRY_SLUG, ID_COUNTRY FROM COUNTRY")
 
     conn2 = db.conexao_azure()
     cursor2 = conn2.cursor()
@@ -86,26 +79,24 @@ def load_cases_covid_from_date():
     conn3 = db.conexao_azure()
     cursor3 = conn3.cursor()
 
-    data_atual = date.today()
-
-    #max_data = cursor2.execute(f"SELECT MAX(DT_CASE) FROM CASE_COUNTRY WHERE ID_COUNTRY > 88")
+    data_atual = datetime.date.today()
 
     for next_country in list_country:
-
+        print(next_country[1])
         max_data = cursor2.execute(f"SELECT MAX(DT_CASE), COUNT(*) FROM CASE_COUNTRY WHERE ID_COUNTRY = {next_country[1]}")
-        print(next_country[0])
+
         for list_date in max_data:
-            print(list_date)
+
             if list_date[1] != 0:
                 last_date = list_date[0]
-                print(len(last_date))
+                n_last_date = datetime.datetime.strptime(last_date, '%Y-%m-%d').date()
 
-                if last_date < data_atual:
-                    print(type(last_date))
-                    url_api = (f'https://api.covid19api.com/total/country/{next_country[0]}?from={last_date}T00:00:00Z&to={data_atual}T00:00:00Z')
-                    print(type())
-
+                add_last_date = n_last_date + datetime.timedelta(days=1)
+                if add_last_date < data_atual:
+                    url_api = (f'https://api.covid19api.com/total/country/{next_country[0]}?from={add_last_date}T00:00:00Z&to={add_last_date}T23:59:59Z')
+                    #print(url_api)
                     response = request_api(url_api)
+
                     for n_load in response:
                         id_country = (next_country[1])
                         confirmed = (n_load['Confirmed'])
@@ -113,15 +104,12 @@ def load_cases_covid_from_date():
                         recovered = (n_load['Recovered'])
                         active = (n_load['Active'])
                         dt_case = (n_load['Date'])
-
                         cursor3.execute(f"INSERT INTO CASE_COUNTRY(ID_COUNTRY, CONFIRMED, DEATHS, RECOVERED, ACTIVE, DT_CASE) VALUES (?,?,?,?,?,?)", id_country, confirmed, deaths, recovered, active, dt_case)
                         cursor3.commit()
 
 
+
 print("Inicio da carga")
 #load_country()
-#update_country_lat_lon()
-#load_cases_covid()
-#update_country_lat_lon()
-load_cases_covid_from_date()
+load_cases_covid()
 print("Término carga")
