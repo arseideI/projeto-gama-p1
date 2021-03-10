@@ -14,6 +14,9 @@ class ConexaoBD(object):
         self.Senha = Senha
         self.verbose = verbose
         self.driver = driver
+        
+    def cursor(self):
+        return self.conn.cursor()
 
     def conexao_azure(self):
 
@@ -27,7 +30,7 @@ class ConexaoBD(object):
                                            f"PWD={self.Senha}")
                 print("A conexão ocorreu com êxito!")
                 self.flag = 1
-                return self.conn
+                return self
 
             except pyodbc.Error as err:
                 if err.args[0] == "IM002":
@@ -51,7 +54,7 @@ class ConexaoBD(object):
                                                     database=self.BD)
                 print("A conexão ocorreu com êxito!")
                 self.flag = 1
-                return self.conn
+                return self
 
             except mysql.connector.Error as err:
                 if err.sqlstate == "42000":
