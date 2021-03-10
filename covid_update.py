@@ -33,17 +33,18 @@ class CovidUpdate(ConexaoBD):
         self.verbose = verbose
         self.driver = driver
         self.data_collected = []
-        self.getUpdate(self)
+        self.getCovidUpdate()
+        self.postDatabaseUpdate()
     
     # Método que realiza GET request sobre as últimas atualizações de todos os países e armazena o json
-    async def getUpdate(self):
+    async def getCovidUpdate(self):
         # Armazena em data
         await self.data_collected.append({"data": datetime.now(), "update_collected": requests.get("").json()})
     
     # Método que contém a function organiza os dados coletados e submete ao BD
-    def postUpdate(self):
+    async def postDatabaseUpdate(self):
         conn = pyodbc.connect(self.driver + self.Server + self.BD + self.uid + self.pwd)
         cursor = conn.cursor()
-        self.getUpdate()
+        await self.getUpdate()
 
 
