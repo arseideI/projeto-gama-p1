@@ -67,7 +67,7 @@ class ConexaoBD(object):
             print("SGBD não suportado. Por favor, selecione as opções sqlserver ou mysql.")
 
     def close_azure(self):
-
+        if self.flag == 1:
             self.conn.close()
             print("Conexão com o servidor encerrada...")
         else:
