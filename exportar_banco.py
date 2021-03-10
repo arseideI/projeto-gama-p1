@@ -103,3 +103,8 @@ def request_deaths():
 
     with open(arquivo, 'w') as outfile:
         json.dump(lista_resultados, outfile)
+
+
+request_confirmed()
+
+request_deaths()
