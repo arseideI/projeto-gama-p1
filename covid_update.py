@@ -26,25 +26,16 @@ import asyncio
 class CovidUpdate(ConexaoBD):
     def __init__(self, Server, BD, Login, Senha, verbose, driver='Driver = {SQL Server}'):
         super().__init__(Server, BD, Login, Senha, verbose, driver=driver)
-        self.Server = Server
-        self.BD = BD
-        self.uid = Login
-        self.pwd = Senha
-        self.verbose = verbose
-        self.driver = driver
         self.data_collected = []
-        self.getCovidUpdate()
         self.postDatabaseUpdate()
     
-    # Método que realiza GET request sobre as últimas atualizações de todos os países e armazena o json
+    # Método GET que realiza a request sobre as últimas atualizações de todos os países e armazena o json
     async def getCovidUpdate(self):
-        # Armazena em data
+        # Armazena update diário em data_collected
         await self.data_collected.append({"data": datetime.now(), "update_collected": requests.get("").json()})
     
-    # Método que contém a function organiza os dados coletados e submete ao BD
+    # Método POST que contém a Azure Function, organiza os dados coletados e submete ao BD
     async def postDatabaseUpdate(self):
-        conn = pyodbc.connect(self.driver + self.Server + self.BD + self.uid + self.pwd)
+        conn = self.conexao_azure()
         cursor = conn.cursor()
         await self.getUpdate()
-
-
