@@ -5,7 +5,7 @@ import pyodbc
 import pandas as pd
 pd.set_option('display.max_columns', 6)
 from export_database import ExportDatabase
-
+import time
 """
 localhost
 login = SA
@@ -245,13 +245,19 @@ if __name__ == '__main__':
             option = 0
 
         if option == 5:
-            print("TOTAL DE MORTES DOS 10 PAÍSES COM MAIORES NÚMEROS EXPORTADO EM JSON ")
+            print("EXPORTANDO TOTAL DE MORTES DOS 10 PAÍSES COM MAIORES NÚMEROS ...")
+            start_time = time.time()
             export.request_deaths()
+            print(f"Export registros de mortes durou: {time.time() - start_time} segundos")
+
             option = 0
 
         if option == 6:
-            print("TOTAL DE CASOS CONFIRMADOS DOS 10 PAÍSES COM MAIORES NÚMEROS EXPORTADO EM JSON ")
+            print("EXPORTANDO TOTAL DE CASOS CONFIRMADOS DOS 10 PAÍSES COM MAIORES NÚMEROS ...")
+            start_time = time.time()
             export.request_confirmed()
+            print(f"Export registros de casos confirmados durou: {time.time() - start_time} segundos")
+
             option = 0
 
         if option == 7:
