@@ -30,9 +30,14 @@ A impressão das 4 informações citadas acima deverá acontecer em tela, atrav�
 
 <details>
   <summary> Configurando a aplicação </summary>
-  ```
-  pip install -r requirements.txt
-  ```
+  Primeiramente, é necessário rodar o comando abaixo para a aplicação baixar todas as suas dependências.
+  <br>
+  <code>pip install -r requirements.txt</code>
+  <br>
+  Após esse comando, a aplicação poderá ser iniciada normalmente.
+  <br>
+  Ao iniciar a aplicação, a seguinte opção de LOGIN e SENHA é apresentada ao usuário:
+  ![Teste](images/teste.jpg)
 </details>
 
 <details>

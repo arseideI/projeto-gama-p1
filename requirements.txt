@@ -1,5 +1,7 @@
 appdirs==1.4.3
 mysql-connector-python
+pyodbc
+pandas
 APScheduler==3.7.0
 CacheControl==0.12.6
 certifi==2019.11.28
