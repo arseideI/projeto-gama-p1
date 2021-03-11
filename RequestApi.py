@@ -6,6 +6,7 @@ class api_covid:
     def __init__(self, url):
         self.url = url
 
+
     #@staticmethod
     def get_connection(self, verbose=True):
         try:

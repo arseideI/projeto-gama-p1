@@ -6,8 +6,8 @@ def load_country():
     object = api_covid('https://api.covid19api.com/countries')
     response = object.get_connection()
 
-    # db = ConexaoBD('casadocodigo-sql-srv-isr.database.windows.net', 'BD_COVID_GAMMA', 'Administrador', 'Alura!123', 'sqlserver')
-    db = ConexaoBD('DESKTOP-DPP33GN', 'BD_COVID_GAMMA', 'sa', 'sa','sqlserver')
+    db = ConexaoBD('casadocodigo-sql-srv-isr.database.windows.net', 'BD_COVID_GAMMA', 'Administrador', 'Alura!123', 'sqlserver')
+    #db = ConexaoBD('DESKTOP-DPP33GN', 'BD_COVID_GAMMA', 'sa', 'sa','sqlserver')
     db2 = db.conexao_azure()
     cursor = db2.cursor()
 

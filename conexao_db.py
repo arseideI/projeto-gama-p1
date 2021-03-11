@@ -14,6 +14,7 @@ class ConexaoBD(object):
         self.verbose = verbose
         self.driver = driver
 
+
     def cursor(self):
         return self.conn.cursor()
 
