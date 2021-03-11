@@ -4,6 +4,7 @@ from datetime import datetime
 import pyodbc
 import pandas as pd
 pd.set_option('display.max_columns', 6)
+from export_database import ExportDatabase
 
 """
 localhost
@@ -93,17 +94,19 @@ def option_from_user():
           '2 - Relatório de novas mortes dos 10 países com maiores números\n'
           "3 - Relatório do total de mortes dos 10 países com maiores números\n"
           "4 - Relatório do total de casos confirmados dos 10 países com maiores números\n"
-          "5 - Fechar o programa")
+          "5 - Exportar total de mortes dos 10 países com maiores números no formato .json\n"
+          "6 - Exportar total de casos confirmados dos 10 países com maiores números no formato .json\n"
+          "7 - Fechar o programa")
 
     option = 0
-    while option < 1 or option > 5:
+    while option < 1 or option > 7:
         try:
             option = int(input("DIGITE A OPÇÃO DESEJADA: "))
         except ValueError:
             print("ENTRADA INVÁLIDA!".center(80))
             option = 0
             continue
-        if option < 1 or option > 5:
+        if option < 1 or option > 7:
             print("OPÇÃO INVÁLIDA. DIGITE UMA OPÇÃO VÁLIDA DE ACORDO COM O MENU ACIMA!".center(80))
 
     return option
@@ -194,9 +197,10 @@ if __name__ == '__main__':
                      driver=driver).conexao_azure()
 
     csr = conn.cursor()
+    export = ExportDatabase(csr)
 
     option = 0
-    while option >= 0 and option <= 5:
+    while option >= 0 and option <= 7:
 
         if option == 0: # Voltar ao menu principal
             option = option_from_user()
@@ -240,8 +244,17 @@ if __name__ == '__main__':
             )
             option = 0
 
-
         if option == 5:
+            print("TOTAL DE MORTES DOS 10 PAÍSES COM MAIORES NÚMEROS EXPORTADO EM JSON ")
+            export.request_deaths()
+            option = 0
+
+        if option == 6:
+            print("TOTAL DE CASOS CONFIRMADOS DOS 10 PAÍSES COM MAIORES NÚMEROS EXPORTADO EM JSON ")
+            export.request_confirmed()
+            option = 0
+
+        if option == 7:
             conn.close_azure()
             print("PROGRAMA FINALIZADO!".center(80))
             break
