@@ -37,15 +37,47 @@ A impressão das 4 informações citadas acima deverá acontecer em tela, atrav�
   Após esse comando, a aplicação poderá ser iniciada normalmente.
   <br>
   Ao iniciar a aplicação, a seguinte opção de LOGIN e SENHA é apresentada ao usuário:
-  ![Teste](images/teste.jpg)
+  --anexar_imagem--
 </details>
 
 <details>
   <summary> Utilizando a aplicação </summary>
-  lorem ipsum
+  Ao logar no sistema, são apresentadas algumas opções para verificar os dados. O usuário consegue escolher uma dessas opções (de 1 a 6) ou então a opção 7 para sair do programa.
+
+
 </details>
 
 <details>
-  <summary> Detalhes </summary>
-  lorem ipsum
+  <summary> Equipe </summary>
+  Product Owner/Liderança:
+  <br>
+  -- Responsáveis pela coordenação da equipe como um todo; apoio para integração de todo o projeto e familiarização com as ferramentas.
+  <br>
+  ==> Alexandre Seidel
+  <br>
+  <br>
+  Desenvolvimento SQL Server/Azure:
+  <br>
+  -- Responsáveis pela criação do Banco de Dados, assim como queries e rotinas diárias para requisições de novos dados automaticamente.
+  <br>
+  ==> Israel de Souza
+  <br>
+  ==> Beatriz Machado
+  <br>
+  ==> Tulio Caviquioli
+  <br>
+  <br>
+  Desenvolvimento Python:
+  <br>
+  -- Responsáveis pelo desenvolvimento da aplicação, assim como menus, requisições e apresentação de dados ao usuário final.
+  <br>
+  ==> Luís Souza
+  <br>
+  ==> Sidicley Ribeiro
+  <br>
+  ==> João Araújo
+  <br>
+  ==> Raphael Ote
+  <br>
+  ==> Igor Otacilio
 </details>
