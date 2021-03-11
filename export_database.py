@@ -42,7 +42,7 @@ class ExportDatabase():
                 ORDER BY CONFIRMED DESC
             """, date).fetchall()
 
-            print(f"Registros de casos confirmados do dia {date} carregados!")
+            # print(f"Registros de casos confirmados do dia {date} carregados!")
             for row in test:
                 new_list = {}
                 new_list["Countries"] = row[0]
@@ -96,7 +96,7 @@ class ExportDatabase():
                 WHERE DT_CASE = ?
                 ORDER BY DEATHS DESC
             """, date).fetchall()
-            print(f"Registros de mortes no dia {date} carregados!")
+            # print(f"Registros de mortes no dia {date} carregados!")
             for row in test:
                 new_list = {}
                 new_list["Countries"] = row[0]
