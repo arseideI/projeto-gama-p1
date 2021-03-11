@@ -45,7 +45,7 @@ class ExportDatabase():
             # print(f"Registros de casos confirmados do dia {date} carregados!")
             for row in test:
                 new_list = {}
-                new_list["Countries"] = row[0]
+                new_list["Country"] = row[0]
                 new_list["Confirmed"] = row[1]
                 country_list.append(new_list)
 
@@ -99,7 +99,7 @@ class ExportDatabase():
             # print(f"Registros de mortes no dia {date} carregados!")
             for row in test:
                 new_list = {}
-                new_list["Countries"] = row[0]
+                new_list["Country"] = row[0]
                 new_list["Deaths"] = row[1]
                 country_list.append(new_list)
 
