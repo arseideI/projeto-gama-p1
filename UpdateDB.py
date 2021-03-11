@@ -1,13 +1,6 @@
 from conexao_db import ConexaoBD
-import requests
+from RequestApi import api_covid
 import datetime
-
-def request_api(url_api):
-    resposta = requests.get(url_api)
-    if resposta.status_code == 200:
-        return resposta.json()
-    else:
-        return resposta.status_code
 
 def load_cases_covid_from_date():
     # db = ConexaoBD('casadocodigo-sql-srv-isr.database.windows.net', 'BD_COVID_GAMMA', 'Administrador', 'Alura!123', 'sqlserver')
@@ -27,6 +20,7 @@ def load_cases_covid_from_date():
     data_atual = datetime.date.today()
 
     for next_country in list_country:
+        print(next_country[1])
         max_data = cursor2.execute(f"SELECT MAX(DT_CASE), COUNT(*) FROM CASE_COUNTRY WHERE ID_COUNTRY = {next_country[1]}")
 
         for list_date in max_data:
@@ -37,9 +31,8 @@ def load_cases_covid_from_date():
 
                 add_last_date = n_last_date + datetime.timedelta(days=1)
                 if add_last_date < data_atual:
-                    url_api = (f'https://api.covid19api.com/total/country/{next_country[0]}?from={add_last_date}T00:00:00Z&to={add_last_date}T23:59:59Z')
-                    #print(url_api)
-                    response = request_api(url_api)
+                    object = api_covid(f'https://api.covid19api.com/total/country/{next_country[0]}?from={add_last_date}T00:00:00Z&to={add_last_date}T23:59:59Z')
+                    response = object.get_connection(False)
 
                     for n_load in response:
                         id_country = (next_country[1])
