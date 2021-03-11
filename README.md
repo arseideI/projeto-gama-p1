@@ -29,6 +29,13 @@ A impressão das 4 informações citadas acima deverá acontecer em tela, atrav�
 </details>
 
 <details>
+  <summary> Configurando a aplicação </summary>
+  ```
+  pip install -r requirements.txt
+  ```
+</details>
+
+<details>
   <summary> Utilizando a aplicação </summary>
   lorem ipsum
 </details>
