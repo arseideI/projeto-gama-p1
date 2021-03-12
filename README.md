@@ -36,8 +36,7 @@ A impressão das 4 informações citadas acima deverá acontecer em tela, atrav�
   <br>
   Após esse comando, a aplicação poderá ser iniciada normalmente.
   <br>
-  Ao iniciar a aplicação, a seguinte opção de LOGIN e SENHA é apresentada ao usuário:
-  --anexar_imagem--
+  Ao iniciar a aplicação, a opção de LOGIN e SENHA será apresentada ao usuário:
 </details>
 
 <details>
