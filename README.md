@@ -69,7 +69,7 @@ A impressão das 4 informações citadas acima deverá acontecer em tela, atrav�
   <br>
   Desenvolvimento Python:
   <br>
-  -- Responsáveis pelo desenvolvimento da aplicação, assim como menus, requisições e apresentação de dados ao usuário final.
+  -- Responsáveis pelo desenvolvimento da aplicação, assim como menus, requisições, apresentação de dados ao usuário final e conexão com o banco de dados.
   <br>
   ==> Luís Souza
   <br>
