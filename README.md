@@ -37,7 +37,7 @@ A impressão das 4 informações citadas acima deverá acontecer em tela, atrav�
   Após esse comando, a aplicação poderá ser iniciada normalmente.
   <br>
   Ao iniciar a aplicação, a seguinte opção de LOGIN e SENHA é apresentada ao usuário:
-  --anexar_imagem--
+  ![image](/images/prompt.png?raw=true "Optional Title")
 </details>
 
 <details>
